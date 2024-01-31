@@ -1,5 +1,5 @@
 # 컬렉션 프레임워크
-종류 
+## 종류 
 1. List
 2. Set
 3. Map
@@ -8,6 +8,7 @@
 
 몇 가지 인터페이스를 통해서 다양한 컬렉션 클래스를 이용할 수 있도록 설계되어 있다.
 인터페이스 종류로는 List, Set, Map이 있는데 이 인터페이스로 사용가능한 컬렉션 객체의 종류는 다음과 같다.
+
 ![img.png](img.png)
 ![img_1.png](img_1.png)
 
@@ -25,7 +26,7 @@ Map은 키와 값을 하나의 쌍으로 묶어서 관리하는 구조로 List, 
     - 일반 배열과 차이점은 제한없이 객체를 추가할 수 있따는 것이다.
     - 객체는 번지에 저장된다. 
     - 객체의 번지를 저장한다.
-    - 동일한 객체를 중복 저장이 가능하다, 동일한 번지 저장이 되낟.
+    - 동일한 객체를 중복 저장이 가능하다, 동일한 번지 저장이 된다.
     - null 또한 저장가능
     - 객체 저장시 인덱스 0부터 차례대로 저장되고 특정 인덱스의 객체를 제거하면 바로 뒤부터 마지막 인덱스 까지 앞으로 1씩 당겨진다.
     - 따라서 빈번한 객체 삭제와 삽입이 일어나는 곳에서 Array List는 사용하지 않는게 좋다. 
@@ -41,7 +42,7 @@ Map은 키와 값을 하나의 쌍으로 묶어서 관리하는 구조로 List, 
 <br><br><br>
 ### Vector
     - ArrayList와 동일한 내부 구조 
-    - 차이점은 Vecotr는 동기화된 메소드로 구성되어 있기 때문에 멀티 스레드가 동시에 Vector()메소드를 실행할 수 없다는 것
+    - 차이점은 Vector는 동기화된 메소드로 구성되어 있기 때문에 멀티 스레드가 동시에 Vector()메소드를 실행할 수 없다는 것
     - 힌번에 하나의 스레드만 실행할 수 있어 경합이 발생하지 않는다.
     - 멀티 스레드 환경에서는 안전하게 객체를 추가 또는 삭제할 수 있다.
 
@@ -76,11 +77,14 @@ Map은 키와 값을 하나의 쌍으로 묶어서 관리하는 구조로 List, 
 ## Map 컬렉션
  - Key, Value로 구성된 Entry 객체를 저장한다.
  - 키와 값은 모두 객체이다.
- - 키는 중복 저장이 안되지만 값은 중복 저장이 되다.
+ - 키는 중복 저장이 안되지만 값은 중복 저장이 된다.
 ![img_13.png](img_13.png)
 ### HashMap
     - 키로 사용할 객체가 hashCode()메소드의 리턴값이 같고 equals()메소드가 true를 리턴할 경우, 동일 키로 보고 중복 저장을 허용하지 않는다.
+    - HashMap보단 concurreuntHashMap을 사용하기
+
 ![img_10.png](img_10.png)
+
 
 ### Hashtable 
     - Hashtable은 HashMap과 동일한 내부 구조를 가지고 있다.
@@ -163,7 +167,48 @@ Map은 키와 값을 하나의 쌍으로 묶어서 관리하는 구조로 List, 
 - LinkedList는 데이터를 저장하는 각 노드가 이전 노드와 다음 노드의 상태만 알고 있다. 
 - LinkedList는 ArrayList 에 비해 데이터의 추가, 삭제에 유리하며 데이터 검색 시에는 성능을 고려해야 한다
 
+## HahMap VS ConcurrentHashMap ?
+![img_19.png](img_19.png)
+1) Thread Safe주요 차이점은 ConcurrentHashMap는 내부적 동기화 때문에 스레드가 Safe합니다. 
+- HashMap는 내부적으로 동기화되지 않고 스레드로부터 안전하지 않습니다. 
+- HashMap 메서드를 사용하여 외부에서 동기화 할 수 있습니다.
+2) Internal Structure(내부구조)
+- ConcurrentHashMap의 모든 작업이 동기화되는 것은 아닙니다. 
+- 추가 및 삭제와 같은 수정 작업만 동기화됩니다. 읽기 작업은 동기화되지 않습니다. 
+- 이렇게 하면 ConcurrentHashMap이 외부에서 동기화된 HashMap보다 동시 다중 스레드 응용 프로그램에 대한 첫 번째 선택 맵이 됩니다.
+4) Null Keys And Null Values
+- HashMap은 최대 하나의 null 키와 임의의 수의 null 값을 허용합니다. 
+- ConcurrentHashMap은 null 키와 null 값도 허용하지 않습니다.
+5) Fail-Fast Vs Fail-Safe
+- HashMap에 의해 반환된 반복자는 본질적으로 빠른 속도입니다. 
+- 반복자 생성 후 맵이 수정되면 ConcurrentModificationException이 발생하기 때문입니다. 
+- ConcurrentHashMap에 의해 반환된 반복자는 본질적으로 안전합니다. iterator 생성 후 맵이 수정되면 예외가 발생하지 않습니다.
+6) Performance(성능)
+- ConcurrentHashMap에 대한 수정 작업만 동기화됩니다. 
+- 따라서 ConcurrentHashMap에 대한 추가 또는 제거 작업은 HashMap보다 느립니다. 
+- ConcurrentHashMap 및 HashMap 모두에 대한 읽기 작업은 두 맵의 읽기 작업이 동일한 성능을 제공합니다. 
 
-Reference 
+= 결론적으로 ConcurrentHashMap는 내부적으로 동기화 함으로, 동시 멀티 쓰레드 어플리케이션에 적합합니다. HashMap 내부적으로 동기화 되지않습니다. 
+따라서 단일 쓰레드 프로그램에 적합합니다.
+
+
+## HashMap VS HashSet VS HashTable ?
+![img_20.png](img_20.png)
+![img_21.png](img_21.png)
+### 속도 차이가 나는 이유
+상대적으로 Map의 Key 값의 해시 코드 변환이 Set의 객체의 해시 코드 계산보다 빠르다
+HashSet은 HashMap을 기반으로 구현되어 있다
+
+### HashMap
+보조해시를 사용하기 때문에 해시 충돌이 덜 발생할 수 있어 상대적으로 성능상 이점이 있다
+동기화를 지원하지 않으며 thread-safe 하지 않다
+
+### HashTable
+다른 스레드가 block되고 unblock 되는 대기 시간을 기다려야 되서 상대적으로 느리다
+동기화를 지원하며 thread-safe하다
+
+
+## Reference 
  - https://www.holaxprogramming.com/2014/02/12/java-list-interface/
+ - https://applepick.tistory.com/124
  - Google Image
