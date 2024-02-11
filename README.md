@@ -22,16 +22,22 @@
 
 ### 2주차 - 1 ( 2024.01.27 ~ 2024.01.31 )
 * 범위 :
-  - JPA개요 (@jiyoung-B)
+  - JPA 개요 (@jiyoung-B)
   - Java Collection (@Pracrobo)
 
 ### 2주차 -  2 ( 2024.01.31 ~ 2024.02.04 )
 * 범위 :
   - JPA (@jiyoung-B)
-  - Java Stream (@Pracrobo)
+  - Java Stream 학습 (@Pracrobo)
 
+### 3주차 - 1 ( 2024.02.05 ~ 2024.02.07 )
+* 범위 :
+  - JPA 이론과 간단한 실습(Spring Boot - MySQL - JPA 연결) (@jiyoung-B)
+  - SQL(RDBMS 위주), Java Stream 학습(@Pracrobo)
 
-
+### 3주차 - 2 ( 2024.02.08 ~ 2024.02.10 )
+* 범위 :
+  - Java Stream 설명 (@Pracrobo)
 
 
 
