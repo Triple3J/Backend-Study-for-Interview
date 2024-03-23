@@ -1,0 +1,230 @@
+# 스트림
+List 컬렉션에서 본복처리를 위해 for문, Set 에서 요소를 하나씩 처리하기 위해 Iterator 를 사용했는데
+Java8, 9부터 또다른 반복으로 Stream을 쓸 수 있다.
+스트림은 요소들이 하나씩 흘러가면서 처리된다는 의미를 가지고 있다.
+List 컬렉션에서 요소를 반복처리하기 위해 스트림을 사용하면 stream()메소드로 Stream 객체를 얻고 forEach()메소드로 요소를 어떻게 처리할지를 람다식으로 제공한다.
+Set으로 사용할 때의 예제를 보자.
+
+```Java
+import java.util.HashSet;
+
+public class SetStream {
+    public static void main(String[] args) {
+        Set<String> set = new HashSet<>();
+        set.add("손흥민");
+        set.add("이강인");
+        set.add("구차절");
+    
+        Stream<String> stream = set.stream();
+        stream.forEach(name -> System.out.println(name));
+    }
+}
+
+
+[결과] 
+구자철
+이강인
+손흥민
+```
+
+
+## Iterator VS  Stream
+stream
+1. 내부 반복자이므로 처리속도가 빠르고 병렬 처리에 효율적이다.
+2. 람다식으로 다양한 요소 처리를 정의할 수 있다.
+3. 중간 처리와 최종 처리를 수행하도록 파이프라인을 형성할 수 있다.
+
+
+## 내부 반복자
+for, Iterator는 컬렉션의 요소를 컬렉션 바깥쪽으로 반복해서 가져와 처리하는데 이것을 외부 반복자라 한다.
+컬렉션 요소를 외부로 가져오는 코드와 처리하는 코드를 모두 개발자 코드가 가지고 있어야한다.
+
+<br>
+스트림은 요소 처리 방법을 컬렉션 내부로 주입시켜서 요소를 반복처리하는데 이것을 내부 반복자라고 한다.
+게빌자 코드에서 제공한 데이터 처리 코드(람다식)를 가지고 컬렉션 내부에서 요소를 반복처리한다.
+멀티코어 CPU 를 최대한 활용하기 위해 요소들을 분배시켜 병렬 작업할 수 있다. 하나씩 처리하는 순차적 외부반복자보다는 효율적으로 요소를 반복시킬 수 있는 장점이 있다.
+
+![img_1.png](img_1.png)
+
+List컬렉션의 내부반복자를 이용해 병렬처리하는 방법을 보여준다. parallelStream()메소드로 병렬 처리 스트림을 얻고 forEach()메소드를 호출할때 요소 처리 방법인 람다식을 제공한다.
+람다식은 처리되는 요소가 무엇이고 어떤 스레드가 처리하는지를 출력한다.<br>
+
+```Java
+import java.util.Arrays;
+
+public class ParallelStream {
+    public static void main(String[] args) {
+        List<String> list = Arrays.asList("이청용", "기성용", "손연재", "손흥민", "이강인");
+        Stream<String> parallelStream = list.parallelStream();
+        parallelStream.forEach(name -> System.out.println("name = " + Thread.currentThread().getName()));
+    }
+}
+```
+## 중간 처리와 최종 처리
+스트림은 하나 이상 연결될 수 있다. 오리지널 스트림 뒤에 필터링 중간 스트림이 연결될 수 있고, 그 뒤에 매핑 중간 스트림이 연결될 수 있다.
+스트림이 연결되어 있는 것을 스트림 파이프라인(Stream PipeLine)이라 한다.
+![img.png](img.png)
+
+최종처리를 위해 요소를 걸러내거나(필터링), 요소를 변환시키거나(매핑), 정렬하는 작업을 수행한다.
+최종 처리는 중간 처리에서 정제된 요소들을 반복하거나 집계(카운팅, 총합, 평균) 작업을 수행한다.
+코드로 수행하면,
+```Java
+Stream<Student> studentStream = list.stream();
+IntStream scoreStream  = studentStream.mapToInt(student -> student.getScore());
+double avg  = scoreStream.average().getAsDouble();
+```
+mapToInt()메소드는 객체를 int 값으로 매핑해서 IntStream으로 변환시킨다.
+어떤 객체를 어떤 int 값으로 매핑할 것인지는 람다식으로 제공해야 한다.
+student -> student.getScore() 는   Student 개개체를 getScore()의 리턴값으로 매핑한다.
+IntStream 은 최종 처리를 위해 다양한 메소드를 제공하는데 average()메소드는 요소들의 평균값을 계산한다.
+
+
+메소드 체이닝 패턴을 이용하면 아래의 코드를 더 간결하게 작성할 수 있다.
+```Java
+double avg = list.stream().mapToInt(student-> student.getScore()).average().getAsDouble();
+```
+스트림 파이프라인으로 구성할 때 주의점은 파이프라인이 맨 끝에는 반드시 최종 처리 부분이 있어야한다는 것이다.
+최종 처리가 없다면 오리지널 및 중간처리 스트림은 동작하지 않는다. 즉, 위 코드에서 average()이하를 생략하면 stream(), mapToInt()는 동작하지 않는다.
+
+## 리소스로부터 스트림 얻기
+![img_2.png](img_2.png)
+![img_3.png](img_3.png)
+
+BaseStream에는 모든 스트림에서 사용할 수 있는 공통 메소드들이 정의되어 있다.
+Stream은 객체요소를 처리하는 스트림이고 IntStream, LongStream, DoubleStream은 각각 기본타입인  int, long, double 요소를 처리하는 스트림이다.
+구현 객체는 다양한 리소스로부터 얻을 수 있다 . 주로 컬렉션과 배열에서 얻지만 다음과 같은 리소스로부터 스트림 구현 객체를 얻을 수 있다.
+![img_4.png](img_4.png)
+
+### 컬렉션으로부터 스트림 얻기
+java.util.Collection 인터페이스는 스트림과 parallelStream() 메소드를 가지고 있기 때문에 자식 인터페이스인 List, Set 인터페이스를 구현한 모든 컬렉션에서 객체 스트림을 얻을 수 있다.
+```java
+// 객체 스트림 얻는 방법 
+Stream<Product> stream = list.stream();
+stream.forEach(p -> System.out.println(p));
+```
+### 배열로부터 스트림 얻기
+java.uitl.Arrays 클래스를 이용하면 다양한 종류의 배열로부터 스트릠을 얻을 수 있다.
+```java
+String[] strArray = {"손흥민" , "구자철", "이강인" };
+Strem<String>  strStream = Arrays.stream(strArray);
+
+int[] intArray = {1, 2, 3, 4, 5};
+IntStream intStream  = Arrays.stream(intArray);
+```
+### 숫자 범위로부터 스트림 얻기
+IntStream, LongStream의 정적메소드인 range()와 rangeClosed()메소드를 이용하면 특정 범위의 정수 스트림을 얻을 수 있다. 첫번째 매개값은 시작 수이고 두번째 매개값은 끝 수인데,
+끝수를 포함하지 않으면 range(), 포함하면 rangeClosed()를 사용한다.
+
+```java
+import java.util.stream.IntStream;
+
+IntStream stream = IntStream.rangeClosed(1, 100);
+stream.forEach(a -> sum += a);
+System.out.println("총합: " + sum);
+
+```
+### 파일로부터 스트림 얻기
+java.nio.file.Files의 lines() 메소드를 이요하면 텍스트 파일의 행 단위 스트림을 얻을 수 있다.
+이는 텍스트 파일에서 한 행씩 읽고 처리할 때 유용하게 사용할 수 있다.
+
+## 요소 걸러내기(필터링)
+필터링은 요소를 걸러내는 중간 처리 기능이다. 필터링 메소드에서는 다음과 같이 distinct()와 filter()가 있다.
+distinct() 메소드는 요소를 중복 제거한다. 객체 스트림일 경우, equals()메소드의 리턴값이 true면 동일한 요소로판단한다.
+IntStream, LongStream, DoubleStream은 같은 값일 경우 중복을 제거한다.<br>
+![img_7.png](img_7.png)<br>
+filter() 메소드는 매개값으로 주어진 Predicate가 true를 리턴하는 요소만 필터링 한다.
+![img_6.png](img_6.png)<br>
+Predicate 는 함수형 인터페이스로 여러 종류가 있다.
+
+## 요소 변환(매핑)
+### 요소를 다른 요소로 변환 : mapXxx()
+![img_9.png](img_9.png)
+모든 Function은 매개값을 리턴값으로 매핑(변환)하는 applyXxx()메소드를 가지고 있다.
+```java
+T -> { ... return R;}
+또는 
+T -> R;
+```
+
+```java
+studentList.stream().mapToInt(s -> s.getScore()).forEach(score -> System.out.println(score));
+```
+여기선 mapToInt메소드를 사용하였다.
+
+기본 타입 간의 변환이거나 기본 타입 요소를 래퍼 객체 요소로 변환하려면 다음과 같은 간편화 메소드를 사용할 수도 있다.<br>
+LongStream -> asLopngStream() : int ->> long <br>
+DoubleStream -> asDoubleStream() : int ->> double, long ->> double <br>
+Stream<Integer>
+Stream<Long>
+Stream<Double> -> boxed() : int ->> Integer /  long ->> Long  /  double ->> Double
+
+
+### 요소를 복수 개의 요소로 변환 : flatMapXxx() 
+![img_10.png](img_10.png)
+
+## 요소 정렬 : sorted()
+정렬은 요소를 오름차순 또는 내림차순으로 정렬하는 중간 처리 기능이다. 요소를 정렬하는 메소드는 다음과 같다.
+### Comparable 구현 객체의 정렬
+스트림의 요소가 객체읠 경우 객체가 Comparable을 구현하고 있어야만 sorted() 메소드를 사용하여 정렬 할 수 있다.
+그렇지 않으면 ClassCastException이 발생한다.
+만약 내림차수능로 정렬하고 싶다면 다음과 같이 Comparartor.reverserOrder()메소드가 리턴하는 Comparartor 를 매개값으로 제공하면 된다.
+
+```java
+import java.util.Comparator;
+
+Stream<Xxx> reverseOrderedStream = stream.sorted(Comparator.reverseOrder());
+```
+
+### Comparator 를 이용한 정렬
+요소 객체가 Comparable 을 구현하고 있지 않다면 비교자를 제공하면 요소를 정렬 시킬 수 있다. 비교자는 Ccomparator 인터페이스를 구현한 객체를 말하는데 간단하게 람다식으로 작성할 수 있다.
+```java
+sorted((o1, o2) -> { ...})
+```
+중괄호 안에는 o1이 o2보다 작으면 음수, 같으면 0 , 크면 양수를 리턴하도록 작성하면 된다. o1과 o2가 정수일 경우에는 Integer.compare(o1, o2)를, 실수일 경우에는 Double.compare(o1, o2)를 호출해서 리턴값을 리턴해도 좋다.
+## 요소를 하나씩 처리(루핑)
+looping은 스트림에서 요소를 하나씩 반복해서 가져와 처리하는 것을 말한다. 
+루핑 메소드에서는 peek()와 forEach()가 있다.
+peek()는 중간처리 메소드고 forEach()는 최종 처리 메소드다.
+따라서 peek()는 최종 처리가 뒤에 붙지 않으면 동작하지 않는다.
+매개타입은 Consumer 는 함수형 인터페이스다.
+모든 Consumer는 매개값을 처리(소비)하는 accept()메소드를 가지고 있다.
+consumer<? super T>를 람다식으로 표현하면 다음과 같다.
+```java
+T -> { ... }
+또는
+T -> 실행문; //하나의 실행문만 있을 경웅 중괄호 생략
+```
+# 요소 조건 만족 여부(매칭)
+매칭은 요소들이 특정 조건에 만족하는지 여부를 조사하는 최종 처리 기능이다. 매칭과 관련된 메소드는 다음과 같다.<br><br>
+boolean allMatch() : 모든 요소가 만족하는지 여부<br>
+boolean anyMatch() : 최소한 하나의 요소가 만족하는지 여부<br>
+boolean noneMatch() : 모든 요소가 만족하지 않는지 여부<br>
+allMatch(), anyMatch(), noneMatch()메소드는 매개값으로 주어진 Predicate가 리턴하는 값에 따라 true, false를 리턴한다.
+
+
+# 요소 기본 집계
+집계는 최종 처리 기능으로 요소들을 처리해서 카운팅, 합계, 평균값, 최대값, 최소값 등과 같이 하나의 값으로 산출하는 것을 말하낟.
+즉, 대량의 데이터를 가공해서 하나의 값으로 축소하는 리덕션이라 볼 수 있다.
+
+## 스트림이 제공하는 기본 집계
+스트림은 카운팅, 최대, 최소, 평균, 합계 등 처리하는 다음과 같은 최종 처리 메소드를 제공한다. <br>
+long count() : 요소 개수 <br>
+OptionalXXX findFirst() : 첫번째 요소 <br>
+Optional max() : 최대 요소 <br>
+Optional min() : 최소 요소 <br>
+OptionalDouble average() : 요소 평균 <br>
+int, long, double sum() : 요소 총합 <br>
+잡계 메소드가 리턴하는 OptionalXXX는 Optional, OptionalDouble, OptionalInt, OptionalLong 클레스를 말한다.
+이들은 최종값을 저장하는 객체로 get(), getAsDouble(), getAsInt(), getAsLong()을 호출하면 최종값을 얻을 수 있다.
+
+
+# 요소 커스텀 집계
+sum(), average(),  count(), max(), min()을 제공하지만 다양한 집계 결과물을 만들 수 있도록 reduce()메소드도 제공한다.
+
+
+
+
+
+
+
+

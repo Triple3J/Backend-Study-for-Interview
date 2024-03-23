@@ -23,9 +23,9 @@ Map은 키와 값을 하나의 쌍으로 묶어서 관리하는 구조로 List, 
 ### Array List 
     - List 에서 가장 많이 사용하는 컬렉션이다.
     - ArrayList에 객체를 추가하면 내부 배열에 객체가 저장된다.
-    - 일반 배열과 차이점은 제한없이 객체를 추가할 수 있따는 것이다.
+    - 일반 배열과 차이점은 제한없이 객체를 추가할 수 있다는 것이다.
     - 객체는 번지에 저장된다. 
-    - 객체의 번지를 저장한다.
+    - 그리고 객체의 번지를 저장한다.
     - 동일한 객체를 중복 저장이 가능하다, 동일한 번지 저장이 된다.
     - null 또한 저장가능
     - 객체 저장시 인덱스 0부터 차례대로 저장되고 특정 인덱스의 객체를 제거하면 바로 뒤부터 마지막 인덱스 까지 앞으로 1씩 당겨진다.
@@ -104,7 +104,7 @@ Map은 키와 값을 하나의 쌍으로 묶어서 관리하는 구조로 List, 
 ### TreeSet
     - 이진트리를 기반으로 한 Set 컬렉션
     - 여러 개의 노드가 트리형태로 연결된 구조로 루트 노드로 불리는 하나의 노드에서 시작해 각 노드에 최대 2개의 노드를 연결할 수 있는 구조
-    - 자동 정렬 : 부모노드의 객체와 비교해서 낮은 것은 왼쪽 자식 노드에 , 높은 것은 오른쪽 자식 노드에 저장
+    - 자동 정렬 : 부모노드의 객체와 비교해서 낮은 것은 왼쪽 자식 노드에, 높은 것은 오른쪽 자식 노드에 저장
     - Red-Black Tree 라는 자료 구조를 사용해서 만들어짐
 ![img_11.png](img_11.png)
 ![img_12.png](img_12.png)
@@ -139,8 +139,8 @@ Map은 키와 값을 하나의 쌍으로 묶어서 관리하는 구조로 List, 
 ## 동기화된 컬렉션
 - 컬렉션 프레임워크의 대부분의 클래스들은 싱글 스레드 환경에서 사용할 수 있도록 설계되었다.
 - 여러 스레드가 동시에 컬렉션에 접근한다면 의도하지 않게 요소가 변경될 수 있는 불안전한 상태가 된다.
-- Vector 와 Hashtable 은 동기화된 메소드로 구성되어 있다. 멀티 스레드 환경에서 안전하게 요소를 처리할  수 있다.
-- ArrayList 와 HashSet, HashMap을 멀ㄹ티 스레드 환경에서 사용하고 싶다면  동기화된 메소드로 래핑하는 Collections 의  synchronizedXXX() 메소드를 제공한다.
+- Vector 와 Hashtable 은 동기화된 메소드로 구성되어 있다. 멀티 스레드 환경에서 안전하게 요소를 처리할 수 있다.
+- ArrayList 와 HashSet, HashMap을 멀티 스레드 환경에서 사용하고 싶다면  동기화된 메소드로 래핑하는 Collections 의  synchronizedXXX() 메소드를 제공한다.
 - ex) ArrayList : Collections.synchronizedList() 
 - ex) HashSet : Collections.synchronizedSet()
 - ex) HashMap : Collections.synchronizedMap()
@@ -169,7 +169,7 @@ Map은 키와 값을 하나의 쌍으로 묶어서 관리하는 구조로 List, 
 
 ## HahMap VS ConcurrentHashMap ?
 ![img_19.png](img_19.png)
-1) Thread Safe주요 차이점은 ConcurrentHashMap는 내부적 동기화 때문에 스레드가 Safe합니다. 
+1) Thread Safe: 주요 차이점은 ConcurrentHashMap는 내부적 동기화 때문에 스레드가 Safe합니다. 
 - HashMap는 내부적으로 동기화되지 않고 스레드로부터 안전하지 않습니다. 
 - HashMap 메서드를 사용하여 외부에서 동기화 할 수 있습니다.
 2) Internal Structure(내부구조)
